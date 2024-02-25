@@ -1,0 +1,52 @@
+version: '3.9'
+
+services:
+  rinhadebackend2:
+    container_name: rinhadebackend2
+    image: fabianoflorentino/rinhadebackend2:0.1
+    hostname: rinhadebackend2
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "9999:3000"
+    links:
+      - rinhadebackend2-db
+    volumes:
+      - .:/app
+    env_file: .env
+    networks:
+      - rinha
+    tty: true
+    stdin_open: true
+
+  rinhadebackend2-db:
+    container_name: rinhadebackend2-db
+    image: postgres:latest
+    hostname: rinhadebackend2-db
+    volumes:
+      - rinha:/var/lib/postgresql/data
+    env_file: .env
+    networks:
+      - rinha
+
+  rinhadebackend2-migration:
+    container_name: rinhadebackend2-migration
+    image: fabianoflorentino/rinhadebackend2:0.1
+    hostname: rinhadebackend2-migration
+    volumes:
+      - .:/app
+    env_file: .env
+    networks:
+      - rinha
+    entrypoint: ["/bin/bash", "-c", "bin/migration"]
+
+volumes:
+  rinha:
+    name: rinhadebackend2
+    driver: local
+
+networks:
+  rinha:
+    name: rinhadebackend2
+    driver: bridge
