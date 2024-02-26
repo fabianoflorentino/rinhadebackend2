@@ -1,5 +1,8 @@
 TRUNCATE clientes CASCADE;
+TRUNCATE transacoes CASCADE;
+
 ALTER SEQUENCE clientes_id_seq RESTART WITH 1;
+ALTER SEQUENCE transacoes_id_seq RESTART WITH 1;
 
 DO $$
 BEGIN
