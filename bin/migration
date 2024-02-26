@@ -6,4 +6,4 @@ psql \
   --host="${POSTGRES_HOST}" \
   --username="${POSTGRES_USER}" \
   --no-password \
-  --dbname="${POSTGRES_DB}" && exit
+  --dbname="${POSTGRES_DB}" --file=script.sql && exit
