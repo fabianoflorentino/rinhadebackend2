@@ -1,3 +1,9 @@
 #!/usr/bin/env bash
 
 bundle exec rails db:migrate
+
+psql \
+  --host="${POSTGRES_HOST}" \
+  --username="${POSTGRES_USER}" \
+  --no-password \
+  --dbname="${POSTGRES_DB}" && exit
