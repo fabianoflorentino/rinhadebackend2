@@ -22,17 +22,29 @@ module Transacoes
     def handle_credito
       saldo_atualizado = @cliente.saldo + @valor
 
-      @cliente.update(saldo: saldo_atualizado) if saldo_atualizado <= @cliente.limite
+      if saldo_atualizado <= @cliente.limite
+        @cliente.update(saldo: saldo_atualizado)
+        @cliente.reload.saldo
+        @cliente.save!
 
-      transacao
+        transacao
+      else
+        raise ActiveRecord::RecordInvalid
+      end
     end
 
     def handle_debito
       saldo_atualizado = @cliente.saldo - @valor
 
-      @cliente.update(saldo: saldo_atualizado) if saldo_atualizado >= 0
+      if saldo_atualizado >= @cliente.limite * -1
+        @cliente.update(saldo: saldo_atualizado)
+        @cliente.reload.saldo
+        @cliente.save!
 
-      transacao
+        transacao
+      else
+        raise ActiveRecord::RecordInvalid
+      end
     end
 
     def transacao
