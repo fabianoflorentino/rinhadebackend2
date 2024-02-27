@@ -10,10 +10,10 @@ class ClientesController < ApplicationController
   private
 
   def clientes
-    @clientes ||= Cliente.all
+    Cliente.all
   end
 
   def set_client
-    @cliente = Cliente.find(params[:id])
+    Cliente.find(params[:id])
   end
 end
