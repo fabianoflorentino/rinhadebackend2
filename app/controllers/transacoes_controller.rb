@@ -6,8 +6,8 @@ class TransacoesController < ApplicationController
   end
 
   def create
-    transacao = Transacoes::Create.new(params[:cliente_id], transacao_params).call
-    render json: { limite: @cliente.reload.limite, saldo: transacao.handle_saldo }, status: :ok
+    Transacoes::Create.new(params[:cliente_id], transacao_params).call
+    render json: { limite: @cliente.limite, saldo: @cliente.reload.saldo }, status: :ok
   end
 
   private
