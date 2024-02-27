@@ -1,5 +1,5 @@
 class ClienteSerializer
   include JSONAPI::Serializer
 
-  attributes :nome, :limite
+  attributes :nome, :limite, :saldo
 end
