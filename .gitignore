@@ -34,3 +34,4 @@
 
 /vendor/bundle
 /.pgpass*
+.DS_Store
