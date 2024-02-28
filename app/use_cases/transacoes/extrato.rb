@@ -11,7 +11,7 @@ module Transacoes
     private
 
     def cliente
-      Cliente.find(@cliente_id)
+      Cliente.find_by_id(@cliente_id)
     end
 
     def transacoes
