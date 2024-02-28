@@ -9,8 +9,13 @@ module Transacoes
 
     def call
       set_cliente
-      handle_credito if @tipo == 'c'
-      handle_debito if @tipo == 'd'
+      ActiveRecord::Base.transaction do
+        handle_credito if @tipo == 'c'
+        handle_debito if @tipo == 'd'
+        transacao
+      end
+    rescue ActiveRecord::RecordInvalid => e
+      Rails.logger.error "Erro ao criar transação: #{e.message}"
     end
 
     private
@@ -20,44 +25,21 @@ module Transacoes
     end
 
     def handle_credito
-      begin
-        saldo_atualizado = @cliente.saldo + @valor
+      saldo_atualizado = @cliente.saldo + @valor
+      raise ActiveRecord::RecordInvalid unless saldo_atualizado <= @cliente.limite
 
-        if saldo_atualizado <= @cliente.limite
-          @cliente.update(saldo: saldo_atualizado)
-          @cliente.reload.saldo
-          @cliente.save!
-
-          transacao
-        else
-          raise ActiveRecord::RecordInvalid
-        end
-      rescue ActiveRecord::ConnectionTimeoutError, ActiveRecord::StatementTimeout => e
-        Rails.logger.error e.message
-      end
+      @cliente.update!(saldo: saldo_atualizado)
     end
 
     def handle_debito
-      begin
-        saldo_atualizado = @cliente.saldo - @valor
+      saldo_atualizado = @cliente.saldo - @valor
+      raise ActiveRecord::RecordInvalid unless saldo_atualizado >= @cliente.limite * -1
 
-        if saldo_atualizado >= @cliente.limite * -1
-          @cliente.update(saldo: saldo_atualizado)
-          @cliente.reload.saldo
-          @cliente.save!
-
-          transacao
-        else
-          raise ActiveRecord::RecordInvalid
-        end
-      rescue ActiveRecord::ConnectionTimeoutError, ActiveRecord::StatementTimeout => e
-        Rails.logger.error e.message
-      end
+      @cliente.update!(saldo: saldo_atualizado)
     end
 
     def transacao
-      transacao = Transacao.new(cliente_id: @cliente_id, valor: @valor, tipo: @tipo, descricao: @descricao)
-      transacao.save!
+      Transacao.create!(cliente_id: @cliente_id, valor: @valor, tipo: @tipo, descricao: @descricao)
     end
   end
 end
