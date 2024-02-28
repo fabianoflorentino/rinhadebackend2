@@ -17,7 +17,7 @@ Rails.application.configure do
   config.eager_load = true
 
   # Show full error reports.
-  config.consider_all_requests_local = true
+  config.consider_all_requests_local = false
 
   # Enable server timing
   config.server_timing = true
@@ -68,6 +68,8 @@ Rails.application.configure do
   config.active_job.verbose_enqueue_logs = true
 
   config.action_controller.perform_caching = true
+
+  config.active_record.dump_schema_after_migration = false
 
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
