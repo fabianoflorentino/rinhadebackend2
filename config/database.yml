@@ -22,7 +22,7 @@ default: &default
   password: <%= ENV.fetch("POSTGRES_PASSWORD") { 'admin' } %>
   host: <%= ENV.fetch("POSTGRES_HOST") { 'localhost' } %>
   port: <%= ENV.fetch("POSTGRES_PORT") { 5432 } %>
-  timeout: 300
+  timeout: 3600
 
 development:
   <<: *default
