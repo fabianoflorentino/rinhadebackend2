@@ -1,6 +1,7 @@
 FROM ruby:3.2.3-alpine3.19
 
 ENV PATH="/usr/local/bundle/bin:${PATH}"
+ENV RUBY_YJIT_ENABLE=1
 
 COPY . /app
 
