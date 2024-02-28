@@ -14,6 +14,6 @@ class ClientesController < ApplicationController
   end
 
   def set_client
-    Cliente.find(params[:id])
+    Cliente.find_by_id(params[:id])
   end
 end

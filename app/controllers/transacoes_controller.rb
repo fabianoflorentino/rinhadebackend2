@@ -13,7 +13,7 @@ class TransacoesController < ApplicationController
   private
 
   def set_cliente
-    @cliente = Cliente.find(params[:cliente_id])
+    @cliente = Cliente.find_by_id(params[:cliente_id])
   end
 
   def transacao_params
