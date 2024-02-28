@@ -9,5 +9,6 @@ Rails.application.routes.draw do
   # root "posts#index"
   resources :clientes, only: [:index, :show] do
     resources :transacoes, only: [:create, :index]
+    resources :extrato, only: [:index]
   end
 end
