@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_26_235528) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_28_200120) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -30,6 +30,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_26_235528) do
     t.string "tipo"
     t.text "descricao"
     t.index ["cliente_id"], name: "index_transacoes_on_cliente_id"
+    t.index ["valor"], name: "index_transacoes_on_valor"
   end
 
   add_foreign_key "transacoes", "clientes"
