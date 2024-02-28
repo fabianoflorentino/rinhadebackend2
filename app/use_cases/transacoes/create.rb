@@ -2,7 +2,7 @@ module Transacoes
   class Create
     def initialize(cliente_id, transacao_params)
       @cliente_id = cliente_id
-      @valor = transacao_params[:valor]
+      @valor = transacao_params[:valor].to_i
       @tipo = transacao_params[:tipo]
       @descricao = transacao_params[:descricao]
     end
@@ -16,34 +16,42 @@ module Transacoes
     private
 
     def set_cliente
-      @cliente = Cliente.find(@cliente_id)
+      @cliente = Cliente.find_by_id(@cliente_id, lock: true)
     end
 
     def handle_credito
-      saldo_atualizado = @cliente.saldo + @valor
+      begin
+        saldo_atualizado = @cliente.saldo + @valor
 
-      if saldo_atualizado <= @cliente.limite
-        @cliente.update(saldo: saldo_atualizado)
-        @cliente.reload.saldo
-        @cliente.save!
+        if saldo_atualizado <= @cliente.limite
+          @cliente.update(saldo: saldo_atualizado)
+          @cliente.reload.saldo
+          @cliente.save!
 
-        transacao
-      else
-        raise ActiveRecord::RecordInvalid
+          transacao
+        else
+          raise ActiveRecord::RecordInvalid
+        end
+      rescue ActiveRecord::ConnectionTimeoutError, ActiveRecord::StatementTimeout => e
+        Rails.logger.error e.message
       end
     end
 
     def handle_debito
-      saldo_atualizado = @cliente.saldo - @valor
+      begin
+        saldo_atualizado = @cliente.saldo - @valor
 
-      if saldo_atualizado >= @cliente.limite * -1
-        @cliente.update(saldo: saldo_atualizado)
-        @cliente.reload.saldo
-        @cliente.save!
+        if saldo_atualizado >= @cliente.limite * -1
+          @cliente.update(saldo: saldo_atualizado)
+          @cliente.reload.saldo
+          @cliente.save!
 
-        transacao
-      else
-        raise ActiveRecord::RecordInvalid
+          transacao
+        else
+          raise ActiveRecord::RecordInvalid
+        end
+      rescue ActiveRecord::ConnectionTimeoutError, ActiveRecord::StatementTimeout => e
+        Rails.logger.error e.message
       end
     end
 
