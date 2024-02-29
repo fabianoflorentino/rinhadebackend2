@@ -16,7 +16,7 @@ module Transacoes
     end
 
     def cliente
-      Cliente.find_by_id(@cliente_id)
+      Cliente.find(@cliente_id)
     end
 
     def extrato
