@@ -15,7 +15,7 @@ class TransacoesController < ApplicationController
   end
 
   def transacao_params
-    params.permit(:valor, :tipo, :descricao)
+    params.permit(:cliente_id, :valor, :tipo, :descricao)
   end
 
   def transacoes
@@ -23,3 +23,5 @@ class TransacoesController < ApplicationController
     transacoes.order(created_at: :desc).limit(10)
   end
 end
+
+# TODO: De onde vem o parametro 'transaco'?
