@@ -11,12 +11,13 @@ module Transacoes
       set_cliente
 
       ActiveRecord::Base.transaction do
-        handle_credito if @tipo == 'c'
-        handle_debito if @tipo == 'd'
+        credito? if @tipo == 'c'
+        debito? if @tipo == 'd'
+
         transacao
       end
     rescue ActiveRecord::RecordInvalid => e
-      Rails.logger.error "Erro ao criar transação: #{e.message}"
+      Rails.logger.error "Erro ao criar transação:#{e.record.errors.full_messages.join(', ')}"
     end
 
     private
@@ -25,14 +26,14 @@ module Transacoes
       @cliente ||= Cliente.find_by_id(@cliente_id)
     end
 
-    def handle_credito
+    def credito?
       saldo_atualizado = @cliente.saldo + @valor
       raise ActiveRecord::RecordInvalid unless saldo_atualizado <= @cliente.limite
 
       @cliente.update!(saldo: saldo_atualizado)
     end
 
-    def handle_debito
+    def debito?
       saldo_atualizado = @cliente.saldo - @valor
       raise ActiveRecord::RecordInvalid unless saldo_atualizado >= @cliente.limite * -1
 
