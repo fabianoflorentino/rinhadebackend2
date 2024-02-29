@@ -23,7 +23,7 @@ module Transacoes
     private
 
     def set_cliente
-      @cliente ||= Cliente.find_by_id(@cliente_id)
+      @cliente ||= Cliente.find(@cliente_id)
     end
 
     def credito?
