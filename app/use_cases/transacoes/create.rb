@@ -9,6 +9,7 @@ module Transacoes
 
     def call
       set_cliente
+
       ActiveRecord::Base.transaction do
         handle_credito if @tipo == 'c'
         handle_debito if @tipo == 'd'
@@ -21,7 +22,7 @@ module Transacoes
     private
 
     def set_cliente
-      @cliente = Cliente.find_by_id(@cliente_id)
+      @cliente ||= Cliente.find_by_id(@cliente_id)
     end
 
     def handle_credito
@@ -39,7 +40,10 @@ module Transacoes
     end
 
     def transacao
+      raise ActiveRecord::RecordInvalid unless @cliente
+
       Transacao.create!(cliente_id: @cliente_id, valor: @valor, tipo: @tipo, descricao: @descricao)
+      Rails.logger.info "Transação criada com sucesso"
     end
   end
 end
