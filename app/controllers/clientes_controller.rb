@@ -4,7 +4,7 @@ class ClientesController < ApplicationController
   end
 
   def show
-    render json: ClienteSerializer.new(set_client).serializable_hash, status: :ok
+    render json: ClienteSerializer.new(cliente).serializable_hash, status: :ok
   end
 
   private
@@ -13,7 +13,7 @@ class ClientesController < ApplicationController
     Cliente.all
   end
 
-  def set_client
+  def cliente
     Cliente.find_by_id(params[:id])
   end
 end
