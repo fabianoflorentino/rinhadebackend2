@@ -1,7 +1,7 @@
 class Transacao < ApplicationRecord
-  belongs_to :cliente
+  self.table_name = 'transacoes'
 
-  self.table_name = "transacoes"
+  belongs_to :cliente
 
   validates :cliente_id, presence: true
 end
