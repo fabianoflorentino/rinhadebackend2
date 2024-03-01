@@ -11,6 +11,8 @@ module Transacoes
       set_cliente
 
       ActiveRecord::Base.transaction do
+        raise ActiveRecord::RecordInvalid unless %w[c d].include?(@tipo)
+
         credito? if @tipo == 'c'
         debito? if @tipo == 'd'
 
