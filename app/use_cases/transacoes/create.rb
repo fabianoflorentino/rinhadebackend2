@@ -11,6 +11,7 @@ module Transacoes
       set_cliente
       tipo_valido?
       valor_valido?
+      descricao_valida?(@descricao)
 
       ActiveRecord::Base.transaction do
         credito? if @tipo == 'c'
@@ -55,6 +56,12 @@ module Transacoes
 
     def valor_valido?
       raise ActiveRecord::RecordInvalid unless @valor.is_a?(Integer)
+    end
+
+    def descricao_valida?(descricao)
+      if descricao.nil? || descricao.length > 10 || descricao.match?(/[^\w\s]/)
+        raise ActiveRecord::RecordInvalid
+      end
     end
   end
 end
