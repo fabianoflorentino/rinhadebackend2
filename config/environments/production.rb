@@ -3,7 +3,7 @@ require "active_support/core_ext/integer/time"
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
-  config.hosts += [/.*\.localhost/, 'api', 'localhost', 'rinha-lb']
+  config.hosts += [/.*\.localhost/, 'localhost', 'rinha-lb', 'rinha']
 
   # Code is not reloaded between requests.
   config.enable_reloading = false
