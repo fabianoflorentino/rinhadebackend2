@@ -3,7 +3,7 @@ version: '3.9'
 services:
   rinhadebackend2:
     container_name: rinhadebackend2
-    image: fabianoflorentino/rinhadebackend2:0.1
+    image: fabianoflorentino/rinhadebackend-2024-q1:0.1-linux-arm64
     hostname: rinhadebackend2
     build:
       context: .
@@ -32,7 +32,7 @@ services:
 
   rinhadebackend2-migration:
     container_name: rinhadebackend2-migration
-    image: fabianoflorentino/rinhadebackend2:0.1
+    image: fabianoflorentino/rinhadebackend-2024-q1:0.1-linux-arm64
     hostname: rinhadebackend2-migration
     volumes:
       - .:/app
