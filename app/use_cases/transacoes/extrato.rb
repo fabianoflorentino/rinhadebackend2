@@ -30,7 +30,8 @@ module Transacoes
           {
             valor: transacao.valor,
             tipo: transacao.tipo,
-            data: transacao.created_at
+            descricao: transacao.descricao,
+            realizada_em: transacao.created_at
           }
         end
       }
