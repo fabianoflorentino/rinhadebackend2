@@ -9,9 +9,8 @@ module Transacoes
 
     def call
       set_cliente
-      tipo_valido?
-      valor_valido?
-      descricao_valida?(@descricao)
+
+      dados_transacao_validos?
 
       ActiveRecord::Base.transaction do
         credito? if @tipo == 'c'
@@ -44,10 +43,15 @@ module Transacoes
     end
 
     def transacao
-      raise ActiveRecord::RecordInvalid unless @cliente
-
       Transacao.create!(cliente_id: @cliente_id, valor: @valor, tipo: @tipo, descricao: @descricao)
       Rails.logger.info "Transação criada com sucesso"
+    end
+
+    def dados_transacao_validos?
+      tipo_valido?
+      valor_valido?
+      dados_validos?
+      descricao_valida?(@descricao)
     end
 
     def tipo_valido?
@@ -55,13 +59,16 @@ module Transacoes
     end
 
     def valor_valido?
-      raise ActiveRecord::RecordInvalid unless @valor.is_a?(Integer)
+      raise ActiveRecord::RecordInvalid unless @valor.is_a?(Integer) && @valor.positive?
     end
 
     def descricao_valida?(descricao)
-      if descricao.nil? || descricao.length > 10 || descricao.match?(/[^\w\s]/)
-        raise ActiveRecord::RecordInvalid
-      end
+      raise ActiveRecord::RecordInvalid if descricao.blank? || descricao.length > 10 || descricao.match?(/[^\w\s]/)
     end
+
+    def dados_validos?
+      @cliente_id && @valor && @tipo && @descricao
+    end
+
   end
 end
