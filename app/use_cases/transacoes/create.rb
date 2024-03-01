@@ -2,17 +2,17 @@ module Transacoes
   class Create
     def initialize(cliente_id, transacao_params)
       @cliente_id = cliente_id
-      @valor = transacao_params[:valor].to_i
+      @valor = transacao_params[:valor]
       @tipo = transacao_params[:tipo]
       @descricao = transacao_params[:descricao]
     end
 
     def call
       set_cliente
+      tipo_valido?
+      valor_valido?
 
       ActiveRecord::Base.transaction do
-        raise ActiveRecord::RecordInvalid unless %w[c d].include?(@tipo)
-
         credito? if @tipo == 'c'
         debito? if @tipo == 'd'
 
@@ -47,6 +47,14 @@ module Transacoes
 
       Transacao.create!(cliente_id: @cliente_id, valor: @valor, tipo: @tipo, descricao: @descricao)
       Rails.logger.info "Transação criada com sucesso"
+    end
+
+    def tipo_valido?
+      raise ActiveRecord::RecordInvalid unless %w[c d].include?(@tipo)
+    end
+
+    def valor_valido?
+      raise ActiveRecord::RecordInvalid unless @valor.is_a?(Integer)
     end
   end
 end
