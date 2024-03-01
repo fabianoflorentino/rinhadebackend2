@@ -12,14 +12,11 @@ module Transacoes
 
       dados_transacao_validos?
 
-      ActiveRecord::Base.transaction do
-        credito? if @tipo == 'c'
-        debito? if @tipo == 'd'
+      ActiveRecord::Base.transaction { transacao if credito?(@tipo) }
+      ActiveRecord::Base.transaction { transacao if debito?(@tipo) }
 
-        transacao
-      end
     rescue ActiveRecord::RecordInvalid => e
-      Rails.logger.error "Erro ao criar transação:#{e.record.errors.full_messages.join(', ')}"
+      Rails.logger.error "Erro ao criar transação: #{e.record.errors.full_messages.join(', ')}"
     end
 
     private
@@ -28,23 +25,32 @@ module Transacoes
       @cliente ||= Cliente.find(@cliente_id)
     end
 
-    def credito?
+    def credito?(tipo)
+      return unless tipo == 'c'
+
       saldo_atualizado = @cliente.saldo + @valor
       raise ActiveRecord::RecordInvalid unless saldo_atualizado <= @cliente.limite
 
-      @cliente.update!(saldo: saldo_atualizado)
+      saldo_atualizado?(saldo_atualizado)
     end
 
-    def debito?
+    def debito?(tipo)
+      return unless tipo == 'd'
+
       saldo_atualizado = @cliente.saldo - @valor
       raise ActiveRecord::RecordInvalid unless saldo_atualizado >= @cliente.limite * -1
 
-      @cliente.update!(saldo: saldo_atualizado)
+      saldo_atualizado?(saldo_atualizado)
     end
 
     def transacao
       Transacao.create!(cliente_id: @cliente_id, valor: @valor, tipo: @tipo, descricao: @descricao)
       Rails.logger.info "Transação criada com sucesso"
+    end
+
+    def saldo_atualizado?(saldo_atualizado)
+      @cliente.update!(saldo: saldo_atualizado)
+      Rails.logger.info "Saldo atualizado com sucesso: #{saldo_atualizado}"
     end
 
     def dados_transacao_validos?
@@ -69,6 +75,5 @@ module Transacoes
     def dados_validos?
       @cliente_id && @valor && @tipo && @descricao
     end
-
   end
 end
